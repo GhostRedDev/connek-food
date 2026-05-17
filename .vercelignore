@@ -1,0 +1,33 @@
+# Excluir del bundle de Vercel todo lo que no es backend Python.
+# Vercel solo necesita: requirements.txt + backend/api/*.py + sus imports en backend/src/
+
+desktop/
+supabase/
+shared/
+
+# Tests y artefactos de dev
+backend/tests/
+backend/scripts/
+backend/alembic/
+.github/
+.claude/
+
+# Docs / dev
+*.md
+!backend/**/*.md
+
+# Caches y artefactos locales
+**/__pycache__/
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+**/.coverage
+**/htmlcov/
+**/node_modules/
+**/.venv/
+**/.venv-*/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store

@@ -1,0 +1,50 @@
+name: Tenancy isolation gate
+
+# Test BLOQUEANTE: si org A puede leer datos de org B, el merge no entra.
+# Corre independiente del CI principal para que sea visible y fácil de auditar.
+
+on:
+  pull_request:
+    paths:
+      - 'backend/src/**'
+      - 'supabase/migrations/**'
+      - 'backend/tests/integration/test_tenancy.py'
+
+jobs:
+  rls-isolation:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: connek_test
+        ports: [5432:5432]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v3
+
+      - run: uv python install 3.13
+
+      - working-directory: backend
+        run: uv sync || true
+
+      - name: Tenancy isolation tests
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/connek_test
+          ENV: test
+          SUPABASE_JWT_SECRET: test-jwt-secret
+        run: |
+          if [ -f tests/integration/test_tenancy.py ]; then
+            uv run pytest tests/integration/test_tenancy.py -v --tb=short
+          else
+            echo "::warning::test_tenancy.py not implemented yet — REQUIRED before any merge to main"
+            exit 0   # cambia a `exit 1` cuando el archivo exista
+          fi

@@ -1,0 +1,59 @@
+name: shared/ sync check
+
+# Verifica que shared/openapi.json + types.ts estén en sync con backend/
+# Si el backend cambió DTOs y nadie regeneró tipos, el PR se bloquea.
+
+on:
+  pull_request:
+    paths:
+      - 'backend/src/contexts/**/interface/dtos.py'
+      - 'backend/src/contexts/**/interface/router.py'
+      - 'shared/**'
+      - 'backend/scripts/export_openapi.py'
+
+jobs:
+  check-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v3
+
+      - name: Install Python
+        run: uv python install 3.13
+
+      - name: Install backend deps
+        working-directory: backend
+        run: uv sync || true
+
+      - uses: pnpm/action-setup@v4
+        with: { version: 9 }
+
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+
+      - name: Regenerate shared/openapi.json
+        run: |
+          if [ -f backend/scripts/export_openapi.py ]; then
+            cd backend && uv run python scripts/export_openapi.py > ../shared/openapi.json.new
+            cd ..
+            diff -u shared/openapi.json shared/openapi.json.new || {
+              echo "::error::shared/openapi.json is out of sync with backend DTOs."
+              echo "Run 'make generate-types' locally and commit the result."
+              exit 1
+            }
+            rm shared/openapi.json.new
+          else
+            echo "::warning::backend/scripts/export_openapi.py not present yet — skipping"
+          fi
+
+      - name: Regenerate shared/types.ts
+        run: |
+          if [ -f shared/openapi.json ]; then
+            pnpm dlx openapi-typescript shared/openapi.json -o shared/types.ts.new
+            diff -u shared/types.ts shared/types.ts.new || {
+              echo "::error::shared/types.ts is out of sync with shared/openapi.json."
+              exit 1
+            }
+            rm shared/types.ts.new
+          fi

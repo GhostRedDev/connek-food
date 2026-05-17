@@ -1,0 +1,60 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": null,
+  "installCommand": "pip install --upgrade pip && pip install -r requirements.txt",
+  "outputDirectory": null,
+  "framework": null,
+  "functions": {
+    "backend/api/health.py":          { "runtime": "@vercel/python@4.5.0", "memory": 512,  "maxDuration": 10  },
+    "backend/api/identity.py":        { "runtime": "@vercel/python@4.5.0", "memory": 1024, "maxDuration": 30  },
+    "backend/api/restaurants.py":     { "runtime": "@vercel/python@4.5.0", "memory": 1024, "maxDuration": 30  },
+    "backend/api/reservations.py":    { "runtime": "@vercel/python@4.5.0", "memory": 1024, "maxDuration": 30  },
+    "backend/api/floor.py":           { "runtime": "@vercel/python@4.5.0", "memory": 1024, "maxDuration": 30  },
+    "backend/api/waitlist.py":        { "runtime": "@vercel/python@4.5.0", "memory": 1024, "maxDuration": 30  },
+    "backend/api/clients.py":         { "runtime": "@vercel/python@4.5.0", "memory": 1024, "maxDuration": 30  },
+    "backend/api/communications.py":  { "runtime": "@vercel/python@4.5.0", "memory": 1024, "maxDuration": 60  },
+    "backend/api/reviews.py":         { "runtime": "@vercel/python@4.5.0", "memory": 1024, "maxDuration": 30  },
+    "backend/api/ai.py":              { "runtime": "@vercel/python@4.5.0", "memory": 2048, "maxDuration": 300 },
+    "backend/api/staff.py":           { "runtime": "@vercel/python@4.5.0", "memory": 1024, "maxDuration": 30  },
+    "backend/api/billing.py":         { "runtime": "@vercel/python@4.5.0", "memory": 1024, "maxDuration": 60  },
+    "backend/api/admin.py":           { "runtime": "@vercel/python@4.5.0", "memory": 1024, "maxDuration": 30  },
+    "backend/api/internal_cron.py":   { "runtime": "@vercel/python@4.5.0", "memory": 1024, "maxDuration": 300 }
+  },
+  "rewrites": [
+    { "source": "/api/v1/health/:path*",         "destination": "/backend/api/health" },
+    { "source": "/api/v1/identity/:path*",       "destination": "/backend/api/identity" },
+    { "source": "/api/v1/restaurants/:path*",    "destination": "/backend/api/restaurants" },
+    { "source": "/api/v1/reservations/:path*",   "destination": "/backend/api/reservations" },
+    { "source": "/api/v1/floor/:path*",          "destination": "/backend/api/floor" },
+    { "source": "/api/v1/waitlist/:path*",       "destination": "/backend/api/waitlist" },
+    { "source": "/api/v1/clients/:path*",        "destination": "/backend/api/clients" },
+    { "source": "/api/v1/communications/:path*", "destination": "/backend/api/communications" },
+    { "source": "/api/v1/reviews/:path*",        "destination": "/backend/api/reviews" },
+    { "source": "/api/v1/ai/:path*",             "destination": "/backend/api/ai" },
+    { "source": "/api/v1/staff/:path*",          "destination": "/backend/api/staff" },
+    { "source": "/api/v1/billing/:path*",        "destination": "/backend/api/billing" },
+    { "source": "/api/v1/admin/:path*",          "destination": "/backend/api/admin" },
+    { "source": "/internal/cron/:path*",         "destination": "/backend/api/internal_cron" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Credentials", "value": "true" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,PATCH,PUT,DELETE,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization, X-Organization-Id" },
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
+    }
+  ],
+  "crons": [
+    { "path": "/internal/cron/send-reminders",       "schedule": "*/5 * * * *" },
+    { "path": "/internal/cron/send-review-requests", "schedule": "*/10 * * * *" },
+    { "path": "/internal/cron/cleanup-waitlist",     "schedule": "*/30 * * * *" },
+    { "path": "/internal/cron/check-trials",         "schedule": "0 9 * * *" }
+  ],
+  "github": {
+    "silent": true,
+    "autoAlias": false
+  }
+}

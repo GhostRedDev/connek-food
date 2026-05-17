@@ -111,14 +111,43 @@ generate-types: ## Genera shared/openapi.json + shared/types.ts + shared/databas
 seed-demo: ## Carga datos de demo en DB local
 	cd backend && uv run python scripts/seed_demo.py
 
-# ─── Deploy ──────────────────────────────────────────────────────
+# ─── Vercel ──────────────────────────────────────────────────────
+.PHONY: vercel-link
+vercel-link: ## Vincula repo local con proyecto Vercel (interactivo)
+	vercel link
+
+.PHONY: vercel-env-pull
+vercel-env-pull: ## Descarga env vars de Vercel a .env.vercel.local
+	vercel env pull .env.vercel.local
+
+.PHONY: vercel-env-add
+vercel-env-add: ## Agrega var a Vercel (uso: make vercel-env-add name=KEY value=VAL env=production)
+	@echo "$(value)" | vercel env add $(name) $(env)
+
+.PHONY: vercel-dev
+vercel-dev: ## Corre Vercel dev local (emula serverless functions)
+	vercel dev
+
+.PHONY: vercel-validate
+vercel-validate: ## Valida vercel.json (sintaxis + functions existen)
+	@python -c "import json; json.load(open('vercel.json'))" && echo "✓ vercel.json es JSON válido"
+	@python -c "import json, pathlib, sys; cfg=json.load(open('vercel.json')); m=[f for f in cfg.get('functions',{}) if not pathlib.Path(f).exists()]; sys.exit(1) if m else print(f'✓ Las {len(cfg[\"functions\"])} functions existen')"
+
 .PHONY: deploy-preview
-deploy-preview: ## Deploy preview a Vercel
+deploy-preview: vercel-validate ## Deploy preview a Vercel
 	vercel
 
 .PHONY: deploy-prod
-deploy-prod: ## Deploy production a Vercel
+deploy-prod: vercel-validate ## Deploy production a Vercel (cuidado)
 	vercel --prod
+
+.PHONY: deploy-status
+deploy-status: ## Ver últimos deploys del proyecto
+	vercel ls --confirm
+
+.PHONY: deploy-logs
+deploy-logs: ## Logs en vivo del último deploy
+	vercel logs $$(vercel ls --confirm 2>/dev/null | head -2 | tail -1 | awk '{print $$2}') --follow
 
 # ─── Limpieza ────────────────────────────────────────────────────
 .PHONY: clean
