@@ -1,0 +1,25 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-connek-50: #eff5ff;
+  --color-connek-100: #dbe7fe;
+  --color-connek-200: #bfd5fe;
+  --color-connek-300: #93b8fd;
+  --color-connek-400: #6092fa;
+  --color-connek-500: #3d6df6;
+  --color-connek-600: #0066ff;
+  --color-connek-700: #1e3fd9;
+  --color-connek-800: #1f37b0;
+  --color-connek-900: #20338a;
+
+  --font-display: 'SF Pro Display', 'Inter', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+html, body, #root { height: 100%; }
+body {
+  font-family: var(--font-sans);
+  background: radial-gradient(ellipse at top, #f6f9ff 0%, #ffffff 50%);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

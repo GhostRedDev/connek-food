@@ -1,7 +1,6 @@
-# Excluir del bundle de Vercel todo lo que no es backend Python.
-# Vercel solo necesita: requirements.txt + backend/api/*.py + sus imports en backend/src/
+# Vercel buildea: desktop/ (Vite → static) + backend/api/*.py (functions).
+# Excluimos lo que NO necesita el deploy.
 
-desktop/
 supabase/
 shared/
 
@@ -15,6 +14,7 @@ backend/alembic/
 # Docs / dev
 *.md
 !backend/**/*.md
+!desktop/**/*.md
 
 # Caches y artefactos locales
 **/__pycache__/

@@ -1,9 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": null,
-  "installCommand": "pip install --upgrade pip && pip install -r requirements.txt",
-  "outputDirectory": null,
   "framework": null,
+  "installCommand": "cd desktop && pnpm install --frozen-lockfile",
+  "buildCommand": "cd desktop && pnpm build",
+  "outputDirectory": "desktop/dist",
   "functions": {
     "backend/api/health.py":          { "runtime": "@vercel/python@4.5.0", "memory": 512,  "maxDuration": 10  },
     "backend/api/identity.py":        { "runtime": "@vercel/python@4.5.0", "memory": 1024, "maxDuration": 30  },
@@ -22,6 +22,7 @@
   },
   "rewrites": [
     { "source": "/api/v1/health/:path*",         "destination": "/backend/api/health" },
+    { "source": "/api/v1/health",                "destination": "/backend/api/health" },
     { "source": "/api/v1/identity/:path*",       "destination": "/backend/api/identity" },
     { "source": "/api/v1/restaurants/:path*",    "destination": "/backend/api/restaurants" },
     { "source": "/api/v1/reservations/:path*",   "destination": "/backend/api/reservations" },
@@ -53,8 +54,5 @@
     { "path": "/internal/cron/cleanup-waitlist",     "schedule": "*/30 * * * *" },
     { "path": "/internal/cron/check-trials",         "schedule": "0 9 * * *" }
   ],
-  "github": {
-    "silent": true,
-    "autoAlias": false
-  }
+  "github": { "silent": true, "autoAlias": false }
 }
