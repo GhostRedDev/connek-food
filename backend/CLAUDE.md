@@ -22,10 +22,6 @@ backend/
 ├── alembic.ini             # config Alembic
 ├── alembic/                # migraciones SQLAlchemy
 │   └── versions/
-├── api/                    # entrypoints Vercel (1 por bounded context)
-│   ├── identity.py
-│   ├── reservations.py
-│   └── ...                 # uno por contexto en src/contexts/
 ├── src/
 │   ├── shared/             # shared kernel — usado por todos los contexts
 │   │   ├── auth/           # JWT validation, TenantContext, DI dependencies
@@ -58,10 +54,12 @@ backend/
     └── seed_demo.py
 ```
 
+> **Nota arquitectónica:** los entrypoints de Vercel viven en `/api/` al root del repo (Vercel lo exige), NO en `backend/api/`. Cada `/api/<context>.py` hace `sys.path.insert` para importar de `backend/src/`. Ver [/api/CLAUDE.md](../api/CLAUDE.md).
+
 ## Reglas duras
 
 1. **Cada bounded context es un mini-microservicio.**
-   - Una sola Vercel Function en `api/<context>.py`.
+   - Una sola Vercel Function en `/api/<context>.py` (root del repo).
    - Sin imports entre contextos (`from src.contexts.X` dentro de `src.contexts.Y` → PROHIBIDO).
    - Comparten DB pero no código de dominio.
 
@@ -121,8 +119,8 @@ Sigue este orden estricto:
 7. Tests integration (DB real, RLS).
 8. **interface**: routers + DTOs + dependencies.
 9. Tests E2E del happy path.
-10. Crear `api/<context>.py` que monta el router e inicia Sentry.
-11. Agregar entry en `vercel.ts` + rewrite en root.
+10. Crear `/api/<context>.py` (root del repo) que monta el router e inicia Sentry.
+11. Agregar entry en `vercel.json` (functions + rewrites).
 
 ## Anti-patrones (NO HAGAS)
 
