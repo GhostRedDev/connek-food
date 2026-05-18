@@ -63,8 +63,9 @@ supabase/.env
 .DS_Store
 Thumbs.db
 
-# ─── Claude Code local settings ─────────────────────────────────
+# ─── Claude Code / Agent skills ──────────────────────────────────
 .claude/settings.local.json
+.claude/skills/             # symlinks regenerados al instalar skills
 
 # ─── Logs ────────────────────────────────────────────────────────
 *.log
