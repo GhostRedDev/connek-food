@@ -5,8 +5,12 @@
   "buildCommand": "cd desktop && pnpm build",
   "outputDirectory": "desktop/dist",
   "functions": {
-    "api/health.py": { "runtime": "@vercel/python@4.5.0", "maxDuration": 10  },
-    "api/index.py":  { "runtime": "@vercel/python@4.5.0", "maxDuration": 60  }
+    "api/health.py": { "runtime": "@vercel/python@4.5.0", "maxDuration": 10 },
+    "api/index.py":  {
+      "runtime": "@vercel/python@4.5.0",
+      "maxDuration": 60,
+      "includeFiles": "backend/src/**"
+    }
   },
   "rewrites": [
     { "source": "/api/v1/health/:path*", "destination": "/api/health" },

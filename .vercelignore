@@ -1,8 +1,10 @@
 # Vercel buildea: desktop/ (Vite → static) + backend/api/*.py (functions).
 # Excluimos lo que NO necesita el deploy.
 
-supabase/
-shared/
+# Patterns sin slash inicial matchean a cualquier profundidad (estilo gitignore).
+# Anclar con / inicial para evitar excluir backend/src/shared/ accidentalmente.
+/supabase/
+/shared/
 
 # Tests y artefactos de dev
 backend/tests/

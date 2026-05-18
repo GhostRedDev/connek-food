@@ -9,8 +9,9 @@ import os
 import sys
 from typing import Any
 
-# Hacer backend/src/ importable.
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'backend'))
+# Hacer backend/src/ importable. abspath resuelve '..' que Python's importer no normaliza.
+_BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'backend'))
+sys.path.insert(0, _BACKEND_ROOT)
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -22,9 +23,10 @@ from src.shared.telemetry import init_sentry, setup_logging
 # ─── Routers de bounded contexts ─────────────────────────────────
 from src.contexts.identity.interface.router import router as identity_router
 
-# Cuando aterricen más contexts, agregar aquí:
+# Pendientes (placeholders hasta que aterricen):
 # from src.contexts.restaurants.interface.router    import router as restaurants_router
 # from src.contexts.reservations.interface.router   import router as reservations_router
+# from src.contexts.floor.interface.router          import router as floor_router
 # ...
 
 setup_logging()
@@ -49,10 +51,8 @@ app.add_middleware(
 
 register_exception_handlers(app)
 
-# Montaje de routers — cada uno bajo su prefix
+# Montaje de routers
 app.include_router(identity_router, prefix="/api/v1/identity")
-
-# Pendientes (placeholders hasta que aterricen):
 # app.include_router(restaurants_router,    prefix="/api/v1/restaurants",    tags=["restaurants"])
 # app.include_router(reservations_router,   prefix="/api/v1/reservations",   tags=["reservations"])
 # app.include_router(floor_router,          prefix="/api/v1/floor",          tags=["floor"])
@@ -86,10 +86,11 @@ def api_root() -> dict[str, Any]:
 
 
 @app.get("/api/v1/{context}/{path:path}", include_in_schema=False)
-def placeholder_for_pending_context(context: str, path: str, request: Request) -> dict[str, Any]:
+def placeholder_for_pending_context(
+    context: str, path: str, request: Request
+) -> dict[str, Any]:
     """Placeholder para contexts aún no implementados."""
     if context in IMPLEMENTED_CONTEXTS:
-        # Si llegamos aquí es porque el router del contexto NO matchea ese path interno.
         return {"status": "not_found", "context": context, "path": path}
     return {
         "service": "connek-api",
