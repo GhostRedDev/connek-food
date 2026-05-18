@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { supabase } from '../../lib/supabase';
+import { OAuthButtons, OrDivider } from './OAuthButtons';
 
 type Props = { onSwitchToLogin: () => void };
 
@@ -36,6 +37,9 @@ export function SignupPage({ onSwitchToLogin }: Props) {
 
   return (
     <AuthCard title="Crear cuenta" subtitle="Empieza tu prueba gratis de Connek">
+      <OAuthButtons mode="signup" organizationName={restaurantName || undefined} />
+      <OrDivider />
+
       <form onSubmit={onSubmit} className="space-y-4">
         <Field
           label="Nombre del restaurante"

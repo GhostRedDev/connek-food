@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { supabase } from '../../lib/supabase';
+import { OAuthButtons, OrDivider } from './OAuthButtons';
 import { Alert, AuthCard, Field } from './SignupPage';
 
 type Props = { onSwitchToSignup: () => void };
@@ -22,6 +23,9 @@ export function LoginPage({ onSwitchToSignup }: Props) {
 
   return (
     <AuthCard title="Bienvenido" subtitle="Inicia sesión en Connek">
+      <OAuthButtons mode="login" />
+      <OrDivider />
+
       <form onSubmit={onSubmit} className="space-y-4">
         <Field
           label="Email"
