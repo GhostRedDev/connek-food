@@ -1,6 +1,20 @@
-# Dependencias mínimas para que Vercel arranque.
-# Pyproject de backend (cuando exista) será la fuente de verdad para dev local.
-# A medida que cada bounded context aterrice en backend/src/, se agregan deps aquí.
+# Vercel Python runtime instala desde aquí (raíz del repo).
+# Para dev local usa `cd backend && uv sync` (pyproject.toml es la fuente).
 
+# Web framework
 fastapi==0.115.4
 pydantic==2.9.2
+pydantic-settings==2.6.0
+email-validator==2.2.0
+
+# DB
+sqlalchemy[asyncio]==2.0.36
+psycopg[binary]==3.2.3
+asyncpg==0.30.0
+
+# Auth — Supabase JWT validation
+pyjwt[crypto]==2.9.0
+cryptography==43.0.3
+
+# Observability
+sentry-sdk[fastapi]==2.18.0
